@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\ITAssetAccessManagement.API.props" />
-</Project>
