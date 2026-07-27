@@ -11,4 +11,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ITAssetAccessManagement.Application\ITAssetAccessManagement.Application.csproj" />
+    <ProjectReference Include="..\ITAssetAccessManagement.Infrastructure\ITAssetAccessManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\ITAssetAccessManagement.Persistence\ITAssetAccessManagement.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>

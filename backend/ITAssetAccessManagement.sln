@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITAssetAccessManagement.API", "ITAssetAccessManagement.API\ITAssetAccessManagement.API.csproj", "{EC83AFC6-D06B-47A1-9157-58B18E33B6A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITAssetAccessManagement.Domain", "ITAssetAccessManagement.Domain\ITAssetAccessManagement.Domain.csproj", "{1B084FDF-AAE5-43EB-A10B-B4FA8957F290}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITAssetAccessManagement.Application", "ITAssetAccessManagement.Application\ITAssetAccessManagement.Application.csproj", "{4F94FCF9-EBE8-4B26-B59C-199F3C8E2AED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITAssetAccessManagement.Infrastructure", "ITAssetAccessManagement.Infrastructure\ITAssetAccessManagement.Infrastructure.csproj", "{C6B14D41-3AE4-41A0-9BC5-6D5AE3E2DDF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITAssetAccessManagement.Persistence", "ITAssetAccessManagement.Persistence\ITAssetAccessManagement.Persistence.csproj", "{D49A3B0B-B3E7-464C-AF78-D8D8F909D22C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITAssetAccessManagement.Tests", "ITAssetAccessManagement.Tests\ITAssetAccessManagement.Tests.csproj", "{74A407EF-8AFA-4C3F-9368-CAC431724FDC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC83AFC6-D06B-47A1-9157-58B18E33B6A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC83AFC6-D06B-47A1-9157-58B18E33B6A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC83AFC6-D06B-47A1-9157-58B18E33B6A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC83AFC6-D06B-47A1-9157-58B18E33B6A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B084FDF-AAE5-43EB-A10B-B4FA8957F290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B084FDF-AAE5-43EB-A10B-B4FA8957F290}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B084FDF-AAE5-43EB-A10B-B4FA8957F290}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B084FDF-AAE5-43EB-A10B-B4FA8957F290}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F94FCF9-EBE8-4B26-B59C-199F3C8E2AED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F94FCF9-EBE8-4B26-B59C-199F3C8E2AED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F94FCF9-EBE8-4B26-B59C-199F3C8E2AED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F94FCF9-EBE8-4B26-B59C-199F3C8E2AED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6B14D41-3AE4-41A0-9BC5-6D5AE3E2DDF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6B14D41-3AE4-41A0-9BC5-6D5AE3E2DDF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6B14D41-3AE4-41A0-9BC5-6D5AE3E2DDF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6B14D41-3AE4-41A0-9BC5-6D5AE3E2DDF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D49A3B0B-B3E7-464C-AF78-D8D8F909D22C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D49A3B0B-B3E7-464C-AF78-D8D8F909D22C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D49A3B0B-B3E7-464C-AF78-D8D8F909D22C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D49A3B0B-B3E7-464C-AF78-D8D8F909D22C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74A407EF-8AFA-4C3F-9368-CAC431724FDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74A407EF-8AFA-4C3F-9368-CAC431724FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74A407EF-8AFA-4C3F-9368-CAC431724FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74A407EF-8AFA-4C3F-9368-CAC431724FDC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
