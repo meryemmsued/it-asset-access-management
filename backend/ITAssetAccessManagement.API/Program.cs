@@ -4,9 +4,11 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
+    options
+        .UseNpgsql(
+            builder.Configuration.GetConnectionString("DefaultConnection")
+        )
+        .UseSnakeCaseNamingConvention());
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
