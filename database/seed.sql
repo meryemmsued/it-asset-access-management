@@ -1,16 +1,6 @@
--- =====================================================================
--- IT Asset and Access Management System
--- database/seed.sql
--- Reference/lookup data only. Safe to re-run (ON CONFLICT DO NOTHING).
--- No user rows are inserted here; password hashes are created by the
--- application, not by this script.
--- =====================================================================
-
 BEGIN;
 
--- =====================================================================
 -- SECTION: ROLES
--- =====================================================================
 INSERT INTO roles (id, name, description, is_system_role)
 VALUES
     (gen_random_uuid(), 'Admin',            'Full administrative access to the system.', TRUE),
@@ -21,9 +11,8 @@ VALUES
     (gen_random_uuid(), 'Auditor',          'Read-only access to audit logs and historical records.', TRUE)
 ON CONFLICT (name) DO NOTHING;
 
--- =====================================================================
 -- SECTION: PERMISSIONS
--- =====================================================================
+
 INSERT INTO permissions (id, name, description)
 VALUES
     -- Users
@@ -74,9 +63,7 @@ VALUES
     (gen_random_uuid(), 'reports.export',           'Export system reports.')
 ON CONFLICT (name) DO NOTHING;
 
--- =====================================================================
 -- SECTION: ROLE-PERMISSION ASSIGNMENTS
--- =====================================================================
 
 -- Admin: every permission in the system
 INSERT INTO role_permissions (role_id, permission_id)
@@ -160,7 +147,3 @@ WHERE r.name = 'Auditor'
 ON CONFLICT DO NOTHING;
 
 COMMIT;
-
--- =====================================================================
--- End of database/seed.sql
--- =====================================================================

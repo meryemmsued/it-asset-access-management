@@ -1,20 +1,9 @@
--- =====================================================================
--- IT Asset and Access Management System
--- database/schema.sql
--- PostgreSQL 18 compatible, SQL-first schema (no EF Core migrations)
--- Safe to re-run during development (DROP ... IF EXISTS at the top)
--- =====================================================================
-
 BEGIN;
 
--- ---------------------------------------------------------------------
 -- Extensions
--- ---------------------------------------------------------------------
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- =====================================================================
 -- DROP TABLES (reverse dependency order, for repeatable dev runs)
--- =====================================================================
 DROP TABLE IF EXISTS notifications CASCADE;
 DROP TABLE IF EXISTS refresh_tokens CASCADE;
 DROP TABLE IF EXISTS login_attempts CASCADE;
@@ -37,14 +26,13 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS teams CASCADE;
 DROP TABLE IF EXISTS departments CASCADE;
 
--- =====================================================================
+ 
 -- SECTION: ORGANIZATION (departments, teams, users)
 -- Note: departments <-> teams <-> users has a circular relationship
 -- (teams.team_lead_user_id -> users.id, users.department_id/team_id ->
 -- departments/teams). We break the cycle by creating teams.team_lead_user_id
 -- as a plain nullable column first and attaching its FK constraint via
 -- ALTER TABLE after the users table exists.
--- =====================================================================
 
 CREATE TABLE departments (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -111,9 +99,7 @@ CREATE INDEX ix_users_manager_id ON users (manager_id);
 CREATE INDEX ix_users_email ON users (email);
 CREATE INDEX ix_users_is_active ON users (is_active);
 
--- =====================================================================
 -- SECTION: AUTHORIZATION (roles, permissions, user_roles, role_permissions)
--- =====================================================================
 
 CREATE TABLE roles (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -166,10 +152,8 @@ CREATE INDEX ix_user_roles_role_id ON user_roles (role_id);
 CREATE INDEX ix_user_roles_assigned_by_user_id ON user_roles (assigned_by_user_id);
 CREATE INDEX ix_role_permissions_permission_id ON role_permissions (permission_id);
 
--- =====================================================================
 -- SECTION: ASSETS (categories, assets, physical/digital details,
 -- assignments, status history)
--- =====================================================================
 
 CREATE TABLE asset_categories (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -299,9 +283,7 @@ CREATE INDEX ix_asset_status_histories_asset_id ON asset_status_histories (asset
 CREATE INDEX ix_asset_status_histories_changed_by_user_id ON asset_status_histories (changed_by_user_id);
 CREATE INDEX ix_asset_status_histories_changed_at ON asset_status_histories (changed_at);
 
--- =====================================================================
 -- SECTION: ACCESS MANAGEMENT (access_requests, approvals, asset_accesses)
--- =====================================================================
 
 CREATE TABLE access_requests (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -385,11 +367,9 @@ CREATE INDEX ix_asset_accesses_granted_by_user_id ON asset_accesses (granted_by_
 -- Fast lookup of currently-active grants
 CREATE INDEX ix_asset_accesses_active ON asset_accesses (asset_id, user_id) WHERE is_active = TRUE;
 
--- =====================================================================
 -- SECTION: SECURITY AND AUDITING
 -- Audit/security history must survive user deletion, so user_id uses
 -- SET NULL rather than CASCADE or RESTRICT.
--- =====================================================================
 
 CREATE TABLE audit_logs (
     id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -487,9 +467,7 @@ CREATE INDEX ix_refresh_tokens_replaced_by_token_id ON refresh_tokens (replaced_
 -- Fast lookup of a user's currently-valid (non-revoked, unexpired) tokens
 CREATE INDEX ix_refresh_tokens_active ON refresh_tokens (user_id, expires_at) WHERE revoked_at IS NULL;
 
--- =====================================================================
 -- SECTION: NOTIFICATIONS
--- =====================================================================
 
 CREATE TABLE notifications (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -517,7 +495,3 @@ CREATE INDEX ix_notifications_created_at ON notifications (created_at);
 CREATE INDEX ix_notifications_user_is_read_created_at ON notifications (user_id, is_read, created_at);
 
 COMMIT;
-
--- =====================================================================
--- End of database/schema.sql
--- =====================================================================
