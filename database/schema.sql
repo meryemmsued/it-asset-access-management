@@ -71,7 +71,7 @@ CREATE TABLE users (
     is_active       BOOLEAN NOT NULL DEFAULT TRUE,
     last_login_at   TIMESTAMPTZ,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at      TIMESTAMPTZ  NULL,
     CONSTRAINT uq_users_email UNIQUE (email),
     CONSTRAINT fk_users_department
         FOREIGN KEY (department_id) REFERENCES departments (id)

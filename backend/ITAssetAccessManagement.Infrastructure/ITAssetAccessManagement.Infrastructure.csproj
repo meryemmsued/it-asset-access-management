@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ITAssetAccessManagement.Application\ITAssetAccessManagement.Application.csproj" />
     <ProjectReference Include="..\ITAssetAccessManagement.Domain\ITAssetAccessManagement.Domain.csproj" />
+    <ProjectReference Include="..\ITAssetAccessManagement.Persistence\ITAssetAccessManagement.Persistence.csproj" />
   </ItemGroup>
 
   <ItemGroup>
