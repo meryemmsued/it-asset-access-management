@@ -44,4 +44,22 @@ public class User : AuditableEntity
 
     public ICollection<AuditLog> AuditLogs { get; set; } =
         new List<AuditLog>();
+
+    public ICollection<Asset> CreatedAssets { get; set; }
+    = new List<Asset>();
+
+    public ICollection<AssetAssignment> AssetAssignments { get; set; }
+        = new List<AssetAssignment>();
+
+    public ICollection<AssetAssignment> AssignedAssets { get; set; }
+        = new List<AssetAssignment>();
+
+    public ICollection<AssetStatusHistory> AssetStatusChanges { get; set; }
+        = new List<AssetStatusHistory>();
+
+    public ICollection<AccessRequest> AccessRequests { get; set; }
+    = new List<AccessRequest>();
+
+    public ICollection<AccessRequestApproval> AccessRequestApprovals { get; set; }
+    = new List<AccessRequestApproval>();
 }

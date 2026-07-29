@@ -20,7 +20,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
+builder.Services.AddScoped<IAssetService, AssetService>();
+builder.Services.AddScoped<IAccessRequestService, AccessRequestService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 

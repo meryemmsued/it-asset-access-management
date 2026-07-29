@@ -31,9 +31,36 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
+    // Asset Management
+    public DbSet<AssetCategory> AssetCategories => Set<AssetCategory>();
+
+    public DbSet<Asset> Assets => Set<Asset>();
+
+    public DbSet<PhysicalAssetDetail> PhysicalAssetDetails =>
+        Set<PhysicalAssetDetail>();
+
+    public DbSet<DigitalAssetDetail> DigitalAssetDetails =>
+        Set<DigitalAssetDetail>();
+
+    public DbSet<AssetAssignment> AssetAssignments =>
+        Set<AssetAssignment>();
+
+    public DbSet<AssetStatusHistory> AssetStatusHistories =>
+        Set<AssetStatusHistory>();
+
+        
+    public DbSet<AccessRequest> AccessRequests => Set<AccessRequest>();
+
+    public DbSet<AccessRequestApproval> AccessRequestApprovals => Set<AccessRequestApproval>();
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Configurations klasöründeki IEntityTypeConfiguration
+        // sınıflarını otomatik olarak uygular.
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(ApplicationDbContext).Assembly);
 
         modelBuilder.Entity<Team>()
             .HasOne(team => team.Department)
