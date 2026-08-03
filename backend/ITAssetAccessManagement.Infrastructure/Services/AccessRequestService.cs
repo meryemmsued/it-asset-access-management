@@ -10,10 +10,14 @@ namespace ITAssetAccessManagement.Infrastructure.Services;
 public sealed class AccessRequestService : IAccessRequestService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IAuditLogService _auditLogService;
 
-    public AccessRequestService(ApplicationDbContext context)
+    public AccessRequestService(
+        ApplicationDbContext context,
+        IAuditLogService auditLogService)
     {
         _context = context;
+        _auditLogService = auditLogService;
     }
 
     public async Task<IEnumerable<AccessRequestSummaryResponse>> GetAllAsync()
@@ -123,23 +127,22 @@ public sealed class AccessRequestService : IAccessRequestService
                 x.Status == AccessRequestStatus.Pending);
 
         if (alreadyPending)
+        {
             throw new InvalidOperationException(
                 "A pending access request already exists for this asset.");
+        }
+
         var accessRequest = new AccessRequest
         {
             Id = Guid.NewGuid(),
             RequestedByUserId = requestedByUserId,
             AssetId = request.AssetId,
-
             RequestedAccessType = request.RequestedAccessType,
             Reason = request.Reason,
-
             RequestedStartDate = request.RequestedStartDate,
             RequestedEndDate = request.RequestedEndDate,
-
             RequestedAt = DateTime.UtcNow,
             ResolvedAt = null,
-
             Status = AccessRequestStatus.Pending,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -148,6 +151,22 @@ public sealed class AccessRequestService : IAccessRequestService
         _context.AccessRequests.Add(accessRequest);
 
         await _context.SaveChangesAsync();
+
+        await _auditLogService.LogAsync(
+            userId: requestedByUserId,
+            action: "ACCESS_REQUEST_CREATED",
+            entityType: "AccessRequest",
+            entityId: accessRequest.Id,
+            oldValues: null,
+            newValues: new
+            {
+                accessRequest.AssetId,
+                accessRequest.RequestedAccessType,
+                accessRequest.Reason,
+                accessRequest.RequestedStartDate,
+                accessRequest.RequestedEndDate,
+                Status = accessRequest.Status.ToString()
+            });
 
         return await GetByIdAsync(accessRequest.Id)
             ?? throw new InvalidOperationException(
@@ -174,6 +193,8 @@ public sealed class AccessRequestService : IAccessRequestService
         if (!approverExists)
             return false;
 
+        var oldStatus = accessRequest.Status;
+
         accessRequest.Status = AccessRequestStatus.Approved;
         accessRequest.ResolvedAt = DateTime.UtcNow;
         accessRequest.UpdatedAt = DateTime.UtcNow;
@@ -192,6 +213,22 @@ public sealed class AccessRequestService : IAccessRequestService
             });
 
         await _context.SaveChangesAsync();
+
+        await _auditLogService.LogAsync(
+            userId: approverUserId,
+            action: "ACCESS_REQUEST_APPROVED",
+            entityType: "AccessRequest",
+            entityId: accessRequest.Id,
+            oldValues: new
+            {
+                Status = oldStatus.ToString()
+            },
+            newValues: new
+            {
+                Status = accessRequest.Status.ToString(),
+                accessRequest.ResolvedAt,
+                request.Comment
+            });
 
         return true;
     }
@@ -219,6 +256,8 @@ public sealed class AccessRequestService : IAccessRequestService
         if (!approverExists)
             return false;
 
+        var oldStatus = accessRequest.Status;
+
         accessRequest.Status = AccessRequestStatus.Rejected;
         accessRequest.ResolvedAt = DateTime.UtcNow;
         accessRequest.UpdatedAt = DateTime.UtcNow;
@@ -238,6 +277,22 @@ public sealed class AccessRequestService : IAccessRequestService
 
         await _context.SaveChangesAsync();
 
+        await _auditLogService.LogAsync(
+            userId: approverUserId,
+            action: "ACCESS_REQUEST_REJECTED",
+            entityType: "AccessRequest",
+            entityId: accessRequest.Id,
+            oldValues: new
+            {
+                Status = oldStatus.ToString()
+            },
+            newValues: new
+            {
+                Status = accessRequest.Status.ToString(),
+                accessRequest.ResolvedAt,
+                request.Comment
+            });
+
         return true;
     }
 
@@ -256,10 +311,26 @@ public sealed class AccessRequestService : IAccessRequestService
         if (accessRequest.Status != AccessRequestStatus.Pending)
             return false;
 
+        var oldStatus = accessRequest.Status;
+
         accessRequest.Status = AccessRequestStatus.Cancelled;
         accessRequest.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        await _auditLogService.LogAsync(
+            userId: requestedByUserId,
+            action: "ACCESS_REQUEST_CANCELLED",
+            entityType: "AccessRequest",
+            entityId: accessRequest.Id,
+            oldValues: new
+            {
+                Status = oldStatus.ToString()
+            },
+            newValues: new
+            {
+                Status = accessRequest.Status.ToString()
+            });
 
         return true;
     }

@@ -22,6 +22,7 @@ builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAssetService, AssetService>();
 builder.Services.AddScoped<IAccessRequestService, AccessRequestService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 

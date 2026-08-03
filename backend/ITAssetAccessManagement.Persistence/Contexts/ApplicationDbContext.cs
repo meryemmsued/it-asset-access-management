@@ -52,6 +52,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<AccessRequest> AccessRequests => Set<AccessRequest>();
 
     public DbSet<AccessRequestApproval> AccessRequestApprovals => Set<AccessRequestApproval>();
+
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

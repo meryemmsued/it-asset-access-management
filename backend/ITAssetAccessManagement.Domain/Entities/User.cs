@@ -62,4 +62,6 @@ public class User : AuditableEntity
 
     public ICollection<AccessRequestApproval> AccessRequestApprovals { get; set; }
     = new List<AccessRequestApproval>();
+
+
 }
