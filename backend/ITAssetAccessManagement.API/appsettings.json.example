@@ -1,12 +1,12 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=ITAssetAccessManagementDb;Username=postgres;Password=123"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=YOUR_DATABASE;Username=YOUR_USERNAME;Password=YOUR_PASSWORD"
   },
 
   "Jwt": {
     "Issuer": "ITAssetAccessManagement",
     "Audience": "ITAssetAccessManagementClient",
-    "SecretKey": "THIS_IS_ONLY_FOR_DEVELOPMENT_CHANGE_ME",
+    "SecretKey": "REPLACE_WITH_A_LONG_RANDOM_SECRET_KEY",
     "AccessTokenExpirationMinutes": 15,
     "RefreshTokenExpirationDays": 7
   },

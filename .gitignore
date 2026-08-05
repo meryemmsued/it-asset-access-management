@@ -14,3 +14,8 @@ obj/
 
 # Logs
 *.log
+node_modules
+
+# Local ASP.NET Core configuration containing secrets
+backend/ITAssetAccessManagement.API/appsettings.json
+backend/ITAssetAccessManagement.API/appsettings.Development.json
