@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using ITAssetAccessManagement.Application.DTOs.Assets;
 using ITAssetAccessManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +8,7 @@ namespace ITAssetAccessManagement.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public sealed class AssetsController : ControllerBase
+public sealed class AssetsController : BaseApiController
 {
     private readonly IAssetService _assetService;
 
@@ -19,9 +18,15 @@ public sealed class AssetsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+        int page = 1,
+        int pageSize = 10)
     {
-        var assets = await _assetService.GetAllAsync();
+        var assets =
+            await _assetService.GetAllAsync(
+                page,
+                pageSize);
+
         return Ok(assets);
     }
 
@@ -40,8 +45,7 @@ public sealed class AssetsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateAssetRequest request)
     {
-        var userId = Guid.Parse(
-            User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var userId = GetCurrentUserId();
 
         var asset = await _assetService.CreateAsync(request, userId);
 
@@ -83,8 +87,7 @@ public sealed class AssetsController : ControllerBase
         Guid id,
         AssignAssetRequest request)
     {
-        var userId = Guid.Parse(
-            User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var userId = GetCurrentUserId();
 
         var success = await _assetService.AssignAsync(
             id,

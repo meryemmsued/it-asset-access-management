@@ -1,4 +1,5 @@
 using ITAssetAccessManagement.Application.DTOs.AuditLogs;
+using ITAssetAccessManagement.Application.DTOs.Common;
 
 namespace ITAssetAccessManagement.Application.Interfaces;
 
@@ -14,7 +15,9 @@ public interface IAuditLogService
         string? ipAddress = null,
         string? userAgent = null);
 
-    Task<List<AuditLogResponse>> GetAllAsync();
+    Task<PagedResult<AuditLogResponse>> GetAllAsync(
+        int page,
+        int pageSize);
 
     Task<AuditLogResponse?> GetByIdAsync(Guid id);
 }

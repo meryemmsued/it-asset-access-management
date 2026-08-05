@@ -4,6 +4,7 @@ using ITAssetAccessManagement.Domain.Entities;
 using ITAssetAccessManagement.Domain.Enums;
 using ITAssetAccessManagement.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
+using ITAssetAccessManagement.Application.DTOs.Common;
 
 namespace ITAssetAccessManagement.Infrastructure.Services;
 
@@ -20,12 +21,28 @@ public sealed class AssetService : IAssetService
         _auditLogService = auditLogService;
     }
 
-    public async Task<IEnumerable<AssetSummaryResponse>> GetAllAsync()
+    public async Task<PagedResult<AssetSummaryResponse>> GetAllAsync(
+        int page,
+        int pageSize)
     {
-        var assets = await _context.Assets
+        if (page < 1)
+            page = 1;
+
+        if (pageSize < 1)
+            pageSize = 10;
+
+        if (pageSize > 100)
+            pageSize = 100;
+
+        var query = _context.Assets
             .AsNoTracking()
-            .Include(asset => asset.AssetCategory)
-            .OrderBy(asset => asset.Name)
+            .OrderBy(asset => asset.Name);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(asset => new AssetSummaryResponse
             {
                 Id = asset.Id,
@@ -36,7 +53,17 @@ public sealed class AssetService : IAssetService
             })
             .ToListAsync();
 
-        return assets;
+        var totalPages = (int)Math.Ceiling(
+            totalCount / (double)pageSize);
+
+        return new PagedResult<AssetSummaryResponse>
+        {
+            Items = items,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
     }
 
     public async Task<AssetResponse?> GetByIdAsync(Guid id)

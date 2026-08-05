@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using ITAssetAccessManagement.Application.DTOs.Users;
 using ITAssetAccessManagement.Domain.Entities;
 using ITAssetAccessManagement.Persistence.Contexts;
@@ -11,7 +10,7 @@ namespace ITAssetAccessManagement.API.Controllers;
 [ApiController]
 [Route("api/users/{userId:guid}/roles")]
 [Authorize(Roles = "Admin")]
-public sealed class UserRolesController : ControllerBase
+public sealed class UserRolesController : BaseApiController
 {
     private readonly ApplicationDbContext _dbContext;
 
@@ -103,15 +102,7 @@ public sealed class UserRolesController : ControllerBase
             });
         }
 
-        var currentUserIdText = User.FindFirstValue(
-            ClaimTypes.NameIdentifier);
-
-        Guid? assignedByUserId = null;
-
-        if (Guid.TryParse(currentUserIdText, out var currentUserId))
-        {
-            assignedByUserId = currentUserId;
-        }
+        var assignedByUserId = GetCurrentUserId();
 
         var userRole = new UserRole
         {

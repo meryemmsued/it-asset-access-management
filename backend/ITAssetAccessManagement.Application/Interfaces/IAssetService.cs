@@ -1,10 +1,13 @@
 using ITAssetAccessManagement.Application.DTOs.Assets;
+using ITAssetAccessManagement.Application.DTOs.Common;
 
 namespace ITAssetAccessManagement.Application.Interfaces;
 
 public interface IAssetService
 {
-    Task<IEnumerable<AssetSummaryResponse>> GetAllAsync();
+    Task<PagedResult<AssetSummaryResponse>> GetAllAsync(
+        int page,
+        int pageSize);
 
     Task<AssetResponse?> GetByIdAsync(Guid id);
 

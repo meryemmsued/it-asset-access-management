@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using ITAssetAccessManagement.Application.DTOs.AccessRequests;
 using ITAssetAccessManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -9,19 +8,32 @@ namespace ITAssetAccessManagement.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public sealed class AccessRequestsController : ControllerBase
+public sealed class AccessRequestsController : BaseApiController
 {
     private readonly IAccessRequestService _service;
 
-    public AccessRequestsController(IAccessRequestService service)
+    public AccessRequestsController(
+        IAccessRequestService service)
     {
         _service = service;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [Authorize(Roles = "Admin,Team Lead")]
+    public async Task<IActionResult> GetAll(
+        int page = 1,
+        int pageSize = 10)
     {
-        var result = await _service.GetAllAsync();
+        var currentUserId = GetCurrentUserId();
+        var isAdmin = User.IsInRole("Admin");
+
+        var result =
+            await _service.GetVisibleRequestsAsync(
+                currentUserId,
+                isAdmin,
+                page,
+                pageSize);
+
         return Ok(result);
     }
 
@@ -33,15 +45,31 @@ public sealed class AccessRequestsController : ControllerBase
         if (result is null)
             return NotFound();
 
+        var currentUserId = GetCurrentUserId();
+        var isAdmin = User.IsInRole("Admin");
+
+        var canView = await _service.CanViewRequestAsync(
+            id,
+            currentUserId,
+            isAdmin);
+
+        if (!canView)
+            return Forbid();
+
         return Ok(result);
     }
 
     [HttpGet("my")]
-    public async Task<IActionResult> GetMyRequests()
+    public async Task<IActionResult> GetMyRequests(
+        int page = 1,
+        int pageSize = 10)
     {
         var userId = GetCurrentUserId();
 
-        var result = await _service.GetByUserAsync(userId);
+        var result = await _service.GetByUserAsync(
+            userId,
+            page,
+            pageSize);
 
         return Ok(result);
     }
@@ -52,7 +80,9 @@ public sealed class AccessRequestsController : ControllerBase
     {
         var userId = GetCurrentUserId();
 
-        var result = await _service.CreateAsync(request, userId);
+        var result = await _service.CreateAsync(
+            request,
+            userId);
 
         return CreatedAtAction(
             nameof(GetById),
@@ -61,14 +91,17 @@ public sealed class AccessRequestsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/approve")]
+    [Authorize(Roles = "Admin,Team Lead")]
     public async Task<IActionResult> Approve(
         Guid id,
         ApproveAccessRequestRequest request)
     {
         var approverId = GetCurrentUserId();
 
-        var success =
-            await _service.ApproveAsync(id, request, approverId);
+        var success = await _service.ApproveAsync(
+            id,
+            request,
+            approverId);
 
         if (!success)
             return BadRequest();
@@ -77,14 +110,17 @@ public sealed class AccessRequestsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/reject")]
+    [Authorize(Roles = "Admin,Team Lead")]
     public async Task<IActionResult> Reject(
         Guid id,
         RejectAccessRequestRequest request)
     {
         var approverId = GetCurrentUserId();
 
-        var success =
-            await _service.RejectAsync(id, request, approverId);
+        var success = await _service.RejectAsync(
+            id,
+            request,
+            approverId);
 
         if (!success)
             return BadRequest();
@@ -97,8 +133,9 @@ public sealed class AccessRequestsController : ControllerBase
     {
         var userId = GetCurrentUserId();
 
-        var success =
-            await _service.CancelAsync(id, userId);
+        var success = await _service.CancelAsync(
+            id,
+            userId);
 
         if (!success)
             return BadRequest();
@@ -106,13 +143,4 @@ public sealed class AccessRequestsController : ControllerBase
         return Ok();
     }
 
-    private Guid GetCurrentUserId()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (string.IsNullOrWhiteSpace(userId))
-            throw new UnauthorizedAccessException();
-
-        return Guid.Parse(userId);
-    }
 }
