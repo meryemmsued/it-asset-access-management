@@ -3,7 +3,9 @@ import api from "../api/axios";
 import type {
   AccessRequestDetail,
   AccessRequestSummary,
+  ApproveAccessRequestRequest,
   CreateAccessRequestRequest,
+  RejectAccessRequestRequest,
 } from "../types/accessRequest";
 
 import type { PagedResult } from "../types/pagination";
@@ -63,24 +65,28 @@ export async function createAccessRequest(
 
 export async function approveAccessRequest(
   id: string,
-  comment: string
+  request: ApproveAccessRequestRequest
 ): Promise<void> {
-  await api.post(`/AccessRequests/${id}/approve`, {
-    comment,
-  });
+  await api.post(
+    `/AccessRequests/${id}/approve`,
+    request
+  );
 }
 
 export async function rejectAccessRequest(
   id: string,
-  comment: string
+  request: RejectAccessRequestRequest
 ): Promise<void> {
-  await api.post(`/AccessRequests/${id}/reject`, {
-    comment,
-  });
+  await api.post(
+    `/AccessRequests/${id}/reject`,
+    request
+  );
 }
 
 export async function cancelAccessRequest(
   id: string
 ): Promise<void> {
-  await api.post(`/AccessRequests/${id}/cancel`);
+  await api.post(
+    `/AccessRequests/${id}/cancel`
+  );
 }

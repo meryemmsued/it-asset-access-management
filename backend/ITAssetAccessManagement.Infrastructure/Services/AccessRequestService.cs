@@ -56,17 +56,45 @@ public sealed class AccessRequestService : IAccessRequestService
                 accessRequest.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
+            
             .Select(accessRequest =>
                 new AccessRequestSummaryResponse
                 {
                     Id = accessRequest.Id,
+
+                    RequestedByUserId =
+                        accessRequest.RequestedByUserId,
+
                     RequestedBy =
                         accessRequest.RequestedByUser.FirstName +
                         " " +
                         accessRequest.RequestedByUser.LastName,
+
                     AssetName = accessRequest.Asset.Name,
+
                     Status = accessRequest.Status,
-                    CreatedAt = accessRequest.CreatedAt
+
+                    CreatedAt = accessRequest.CreatedAt,
+
+                    CanApprove =
+                        accessRequest.Status ==
+                            AccessRequestStatus.Pending &&
+                        accessRequest.RequestedByUserId !=
+                            currentUserId &&
+                        (
+                            isAdmin ||
+                            (
+                                accessRequest.RequestedByUser.Team != null &&
+                                accessRequest.RequestedByUser.Team
+                                    .TeamLeadUserId == currentUserId
+                            )
+                        ),
+
+                    CanCancel =
+                        accessRequest.Status ==
+                            AccessRequestStatus.Pending &&
+                        accessRequest.RequestedByUserId ==
+                            currentUserId
                 })
             .ToListAsync();
 
@@ -112,13 +140,29 @@ public sealed class AccessRequestService : IAccessRequestService
                 new AccessRequestSummaryResponse
                 {
                     Id = accessRequest.Id,
+
+                    RequestedByUserId =
+                        accessRequest.RequestedByUserId,
+
                     RequestedBy =
                         accessRequest.RequestedByUser.FirstName +
                         " " +
                         accessRequest.RequestedByUser.LastName,
-                    AssetName = accessRequest.Asset.Name,
-                    Status = accessRequest.Status,
-                    CreatedAt = accessRequest.CreatedAt
+
+                    AssetName =
+                        accessRequest.Asset.Name,
+
+                    Status =
+                        accessRequest.Status,
+
+                    CreatedAt =
+                        accessRequest.CreatedAt,
+
+                    CanApprove = false,
+
+                    CanCancel =
+                        accessRequest.Status ==
+                        AccessRequestStatus.Pending
                 })
             .ToListAsync();
 

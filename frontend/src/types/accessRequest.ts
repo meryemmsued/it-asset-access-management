@@ -1,9 +1,12 @@
 export interface AccessRequestSummary {
   id: string;
+  requestedByUserId: string;
   requestedBy: string;
   assetName: string;
   status: number;
   createdAt: string;
+  canApprove: boolean;
+  canCancel: boolean;
 }
 
 export interface AccessRequestDetail {
@@ -27,4 +30,12 @@ export interface CreateAccessRequestRequest {
   reason: string;
   requestedStartDate: string | null;
   requestedEndDate: string | null;
+}
+
+export interface ApproveAccessRequestRequest {
+  comment: string | null;
+}
+
+export interface RejectAccessRequestRequest {
+  comment: string;
 }
