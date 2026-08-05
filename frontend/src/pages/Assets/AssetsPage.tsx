@@ -15,6 +15,7 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -70,42 +71,74 @@ export default function AssetsPage() {
   const [openDialog, setOpenDialog] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
+
   const [form, setForm] =
     useState<CreateAssetRequest>(initialForm);
 
-  async function loadAssets() {
-    const data = await getAssets();
-    setAssets(data);
+  async function loadAssets(
+    requestedPage = page,
+    requestedPageSize = pageSize
+  ) {
+    const data = await getAssets(
+      requestedPage,
+      requestedPageSize
+    );
+
+    setAssets(data.items);
+    setTotalCount(data.totalCount);
   }
 
-  async function loadCategories() {
-    const data = await getAssetCategories();
-    setCategories(data);
-  }
-
+  /*
+   * Categories do not depend on the current asset page.
+   * Therefore, they are loaded only once.
+   */
   useEffect(() => {
-    async function loadPage() {
+    async function loadCategories() {
       try {
-        await Promise.all([
-          loadAssets(),
-          loadCategories(),
-        ]);
+        const data = await getAssetCategories();
+        setCategories(data);
       } catch {
-        setError("Failed to load asset data.");
+        setError("Failed to load asset categories.");
+      }
+    }
+
+    loadCategories();
+  }, []);
+
+  /*
+   * Asset records must be fetched again whenever the user
+   * changes the page or the number of rows per page.
+   */
+  useEffect(() => {
+    async function loadAssetPage() {
+      setLoading(true);
+      setError("");
+
+      try {
+        await loadAssets(page, pageSize);
+      } catch {
+        setError("Failed to load assets.");
       } finally {
         setLoading(false);
       }
     }
 
-    loadPage();
-  }, []);
+    loadAssetPage();
+  }, [page, pageSize]);
 
   const selectedCategory = categories.find(
     (category) => category.id === form.assetCategoryId
   );
 
+  /*
+   * This search currently filters only the records returned
+   * for the active page. Server-side search can be added later.
+   */
   const filteredAssets = assets.filter((asset) => {
-    const search = searchTerm.toLowerCase();
+    const search = searchTerm.trim().toLowerCase();
 
     return (
       asset.assetCode.toLowerCase().includes(search) ||
@@ -161,7 +194,16 @@ export default function AssetsPage() {
 
     try {
       await createAsset(form);
-      await loadAssets();
+
+      /*
+       * Return to the first page after creation so that the
+       * refreshed result remains predictable.
+       */
+      if (page === 1) {
+        await loadAssets(1, pageSize);
+      } else {
+        setPage(1);
+      }
 
       setOpenDialog(false);
       setForm(initialForm);
@@ -174,7 +216,17 @@ export default function AssetsPage() {
   }
 
   if (loading) {
-    return <CircularProgress />;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          py: 8,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (error) {
@@ -204,7 +256,7 @@ export default function AssetsPage() {
       >
         <TextField
           label="Search Assets"
-          placeholder="Search by code, name or category..."
+          placeholder="Search the current page..."
           value={searchTerm}
           onChange={(event) =>
             setSearchTerm(event.target.value)
@@ -239,6 +291,7 @@ export default function AssetsPage() {
                 <TableCell
                   colSpan={4}
                   align="center"
+                  sx={{ py: 4 }}
                 >
                   No assets found.
                 </TableCell>
@@ -259,6 +312,21 @@ export default function AssetsPage() {
             )}
           </TableBody>
         </Table>
+
+        <TablePagination
+          component="div"
+          count={totalCount}
+          page={page - 1}
+          rowsPerPage={pageSize}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          onPageChange={(_, newPage) => {
+            setPage(newPage + 1);
+          }}
+          onRowsPerPageChange={(event) => {
+            setPageSize(Number(event.target.value));
+            setPage(1);
+          }}
+        />
       </Paper>
 
       <Dialog
@@ -350,9 +418,9 @@ export default function AssetsPage() {
               )
             }
             slotProps={{
-            inputLabel: {
+              inputLabel: {
                 shrink: true,
-            },
+              },
             }}
           />
 
@@ -385,9 +453,10 @@ export default function AssetsPage() {
               )
             }
             slotProps={{
-                inputLabel: {
+              inputLabel: {
                 shrink: true,
-                }}}
+              },
+            }}
           />
 
           {selectedCategory?.assetType === "Physical" && (
@@ -520,9 +589,10 @@ export default function AssetsPage() {
                   )
                 }
                 slotProps={{
-                    inputLabel: {
+                  inputLabel: {
                     shrink: true,
-                }}}
+                  },
+                }}
               />
 
               <TextField
@@ -538,10 +608,10 @@ export default function AssetsPage() {
                   )
                 }
                 slotProps={{
-                    inputLabel: {
-                        shrink: true,
-                    }   }}
-            
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
               />
 
               <TextField

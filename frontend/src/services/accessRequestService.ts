@@ -6,20 +6,36 @@ import type {
   CreateAccessRequestRequest,
 } from "../types/accessRequest";
 
-export async function getAllAccessRequests():
-Promise<AccessRequestSummary[]> {
-  const response = await api.get<AccessRequestSummary[]>(
-    "/AccessRequests"
-  );
+import type { PagedResult } from "../types/pagination";
+
+export async function getAllAccessRequests(
+  page = 1,
+  pageSize = 10
+): Promise<PagedResult<AccessRequestSummary>> {
+  const response = await api.get<
+    PagedResult<AccessRequestSummary>
+  >("/AccessRequests", {
+    params: {
+      page,
+      pageSize,
+    },
+  });
 
   return response.data;
 }
 
-export async function getMyAccessRequests():
-Promise<AccessRequestSummary[]> {
-  const response = await api.get<AccessRequestSummary[]>(
-    "/AccessRequests/my"
-  );
+export async function getMyAccessRequests(
+  page = 1,
+  pageSize = 10
+): Promise<PagedResult<AccessRequestSummary>> {
+  const response = await api.get<
+    PagedResult<AccessRequestSummary>
+  >("/AccessRequests/my", {
+    params: {
+      page,
+      pageSize,
+    },
+  });
 
   return response.data;
 }
